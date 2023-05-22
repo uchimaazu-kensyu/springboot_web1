@@ -14,8 +14,8 @@ public class LessonApplication {
 		ProductService productService = context.getBean(ProductService.class);
 
 //		//全件取得
-//		var list = productService.findAll();
-//		list.stream().forEach(System.out::println);
+		var list = productService.findAll();
+		list.stream().forEach(System.out::println);
 
 
 //		//id検索
@@ -35,10 +35,10 @@ public class LessonApplication {
 //		var list = productService.findAll();
 //		list.stream().forEach(System.out::println);
 
-		//delete
-		productService.delete(4);
-		var list = productService.findAll();
-		list.stream().forEach(System.out::println);
+//		//delete
+//		productService.delete(4);
+//		var list = productService.findAll();
+//		list.stream().forEach(System.out::println);
 
 
 
