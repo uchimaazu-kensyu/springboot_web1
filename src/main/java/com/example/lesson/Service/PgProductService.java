@@ -45,4 +45,8 @@ public class PgProductService implements ProductService{
         return productDao.delete(id);
     }
 
+    public int findMaxId(){
+        return productDao.findMaxId();
+    }
+
 }

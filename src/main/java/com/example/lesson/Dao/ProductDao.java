@@ -12,4 +12,5 @@ public interface ProductDao {
     int update(ProductRecord update);
     int delete(int id);
 
+    int findMaxId();
 }

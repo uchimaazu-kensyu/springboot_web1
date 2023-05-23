@@ -20,10 +20,15 @@ public class PgProductDao implements ProductDao{
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private JdbcTemplate jdbcForMaxId;
+
     @Override
     public List<ProductRecord> findAll(){
-        return jdbcTemplate.query("SELECT * FROM products ",
+
+        return jdbcTemplate.query("SELECT * FROM products ORDER BY id ",
                 new DataClassRowMapper<>(ProductRecord.class));
+
     }
 
     @Override
@@ -41,7 +46,6 @@ public class PgProductDao implements ProductDao{
         param.addValue("name", input.name());
         param.addValue("price", input.price());
         return jdbcTemplate.update("INSERT INTO products VALUES(:id, :name, :price)", param);
-
     }
 
     @Override
@@ -58,6 +62,12 @@ public class PgProductDao implements ProductDao{
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("id", deleteId);
         return jdbcTemplate.update("DELETE FROM products WHERE id = :id", param);
+    }
+
+    public int findMaxId(){
+        String sql="SELECT MAX(id) FROM products";
+        Integer maxId =jdbcForMaxId.queryForObject(sql, Integer.class);
+        return maxId;
     }
 
 }

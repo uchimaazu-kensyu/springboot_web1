@@ -10,4 +10,5 @@ public interface ProductService {
     int insert(ProductRecord input);
     int update(ProductRecord update);
     int delete(int id);
+    int findMaxId();
 }
