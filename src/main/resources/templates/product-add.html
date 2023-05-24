@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
-<h1>商品追加</h1>
+<h1 th:text="#{form.label}"></h1>
 
 <form action ="/productAdd" method="POST" th:object="${addProduct}">
-    <p>商品名</p>
-    <p><input type="text" th:field="*{productName}"></p>
-    <p>価格</p>
-  <p><input type="text" th:field="*{productPrice}"></p>
+    <p th:text="#{form.label.product-name}"></p>
+    <p><input type="text" th:field="*{productName}"><span class="error" th:each="error: ${#fields.errors('productName')}">[[ ${error} ]]</span></p>
+    <p th:text="#{form.label.product-price}"></p>
+  <p><input type="text" th:field="*{productPrice}"><span class="error" th:each="error: ${#fields.errors('productPrice')}">[[ ${error} ]]</span></p>
 
-  <button type="submit">追加</button>
+  <button type="submit" th:text="#{form.btn.add}"></button>
 
 
 

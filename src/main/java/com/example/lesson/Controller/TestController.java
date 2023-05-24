@@ -4,6 +4,8 @@ import com.example.lesson.Entity.AddProductForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import com.example.lesson.Service.*;
@@ -41,13 +43,16 @@ public class TestController {
     }
 
     @GetMapping("/productAdd")
-    public String addProductForm(@ModelAttribute("addProduct") AddProductForm addProductForm){
+    public String addProductForm(@ModelAttribute("addProduct") AddProductForm addProductForm, BindingResult bindingResult){
         return "product-add";
     }
 
 
     @PostMapping("/productAdd")
-    public String addProduct(@ModelAttribute("addProduct") AddProductForm addProductForm){
+    public String addProduct(@Validated @ModelAttribute("addProduct") AddProductForm addProductForm,BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            return  "/product-add";
+        }
         int id = productService.findMaxId()+1;
         var addProduct = new ProductRecord (id,addProductForm.getProductName(),addProductForm.getProductPrice());
         productService.insert(addProduct);
@@ -57,9 +62,10 @@ public class TestController {
 
 
     @GetMapping("/product/update/{id}")
-    public String getUpdate(@PathVariable("id") int id,Model model) {
-        AddProductForm addProductForm = new AddProductForm();
+    public String getUpdate(@PathVariable("id") int id,@ModelAttribute("updateProduct") AddProductForm addProductForm , BindingResult bindingResult,Model model) {
+        addProductForm = new AddProductForm();
         var product = productService.findById(id);
+        addProductForm.setProductId(id);
         addProductForm.setProductName(product.name());
         addProductForm.setProductPrice(product.price());
 
@@ -70,12 +76,24 @@ public class TestController {
     }
 
     @PostMapping("/product/update/{id}")
-    public String postProduct(@PathVariable("id") int id,@ModelAttribute("updateProduct") AddProductForm addProductForm ,Model model){
-        model.addAttribute("updateProduct", new AddProductForm());
+    public String postProduct(@Validated @ModelAttribute("updateProduct") AddProductForm addProductForm , BindingResult bindingResult, @PathVariable("id") int id,Model model){
+        if(bindingResult.hasErrors()){
+            var product = productService.findById(id);
+            model.addAttribute("product", product);
+            System.out.println(product);
+            model.addAttribute("updateProduct", addProductForm);
+
+            return  "product-update";
+        }
+
+
+//        model.addAttribute("updateProduct", new AddProductForm());
         var updateInfo = new ProductRecord(id,addProductForm.getProductName(),addProductForm.getProductPrice());
         productService.update(updateInfo);
         return "redirect:/product-List";
     }
+
+
 
     @PostMapping("/product/{id}")
     public String delete(@PathVariable("id") int id) {
