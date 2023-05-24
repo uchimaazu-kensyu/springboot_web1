@@ -15,7 +15,6 @@ public class AddProductForm {
     private String productName;
 
     @NotNull
-    @Min(0)
     private Integer productPrice;
 
 }
