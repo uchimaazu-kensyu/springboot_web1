@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+   th,td {
+     /* 枠線を1本線指定 */
+      border: solid 1px;
+      width:auto;
+   }
+
+   table{
+     /* 枠線を1本線指定 */
+      border: solid 1px;
+      border-collapse:  collapse;
+      white-space: nowrap;
+    }
+  </style>
+
+</head>
+<body>
+
+  <div id="app">
+    <p>3だよ</p>
+    <table border="1">
+      <tr>
+          <th>ID</th>
+          <th>名前</th>
+          <th>値段</th>
+          <th>選択</th>
+      </tr>
+      <tr v-for ="product in products">
+        <td>{{product.id}}</td>
+        <td>{{product.name}}</td>
+        <td>{{product.price}}</td>
+        <td><input type="radio" name="productSelect" v-bind:value="product.id" @click="edit(product.id)"></td>
+      </tr>
+    </table>
+
+    <div id="add-area">
+      <p>名前：<input v-model="addName"></p>
+      <p>値段：<input v-model="addPrice"></p>
+      <p><button @click="addProduct" >追加</button></p>
+      
+      
+    </div>
+
+
+    <div id="edit-area">
+      <p>id:<input v-model="editId" disabled></p>
+      <p>名前：<input v-model="editName"></p>
+      <p>値段：<input v-model="editPrice"></p>
+      <p><button @click="updateProduct" >更新</button><button @click="deleteProduct" >削除</button></p>
+      <p></p>
+    </div>
+
+
+  </div>
+
+
+
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+
+<script>
+
+  const { createApp } = Vue
+
+  createApp({
+    data(){
+      return {
+        products:[],
+        editId:'',
+        editName:'',
+        editPrice:'',
+        addName:'',
+        addPrice: '',
+
+
+      }
+    },
+
+    methods:{
+
+
+      //テーブルから製品を取ってくる
+      getProducts(){
+        axios.get('/api/products')
+        .then(res =>{
+          this.products =res.data;
+          console.log(this.products);
+        });
+      },
+
+      
+      edit(id){
+
+        axios.get(`/api/products/${id}`)
+        .then(res =>{
+          const data =(res.data);
+          console.log(data);
+          this.editId = data.id;
+          this.editName = data.name;
+          this.editPrice = data.price;
+        });
+
+      },
+
+      updateProduct(){
+        const update ={
+          id:this.editId,
+          name:this.editName,
+          price:this.editPrice
+        }
+
+        const url = axios.put('/api/products/',update)
+        .then(() => {
+            console.log('データ更新:',url)
+            this.getProducts();
+;
+        });
+
+      },
+
+      addProduct(){
+        let maxId= 0;
+        console.log(maxId);
+        axios.get('api/getMaxId')
+        .then(res =>{
+          maxId = res.data;
+          console.log(maxId);
+
+          const addProduct ={
+          id:maxId+1,
+          name:this.addName,
+          price:this.addPrice
+        };
+          axios.post('/api/product',addProduct)
+          .then(res =>{
+            this.getProducts();
+            this.addName =''
+            this.addPrice =''
+          })
+        });
+        
+      },
+
+      deleteProduct(){
+        console.log(this.editId);
+        axios.delete(`api/products/${this.editId}`,this.editId)
+        .then(res =>{
+          this.getProducts();
+          this.editId =''
+          this.editName =''
+          this.editPrice =''
+        });
+      }
+
+
+
+    },
+
+    created: function() {
+      console.log('created');
+      this.getProducts();
+      // test ={id:1,
+      //         name:"test",
+      //       price:1000}
+
+      // const url = axios.post('/api/test',test)
+      // .then(() => {
+      //       console.log('test送信:',url)
+      //   })
+    }
+
+
+  }).mount('#app')
+
+  
+
+
+
+
+
+  function handleButtonClick() {
+  var radioButtons = document.getElementsByName("productSelect");
+  var selectedValue;
+
+  for (var i = 0; i < radioButtons.length; i++) {
+    if (radioButtons[i].checked) {
+      selectedValue = radioButtons[i].value;
+      break;
+    }
+  }
+
+  if (selectedValue) {
+   return selectedValue;
+  } else {
+    console.log("ラジオボタンが選択されていません。");
+  }
+}
+
+function uncheakRadiobutton(){
+  console.log("来たよ")
+  let radioButtons = document.getElementsByName("productSelect");
+  for (var i = 0; i < radioButtons.length; i++) {
+      radioButtons[i].checked = false;
+}
+}
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>

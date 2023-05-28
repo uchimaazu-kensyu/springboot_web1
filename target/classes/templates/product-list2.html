@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+   th,td {
+     /* 枠線を1本線指定 */
+      border: solid 1px;
+      width:auto;
+   }
+
+   table{
+     /* 枠線を1本線指定 */
+      border: solid 1px;
+      border-collapse:  collapse;
+      white-space: nowrap;
+    }
+  </style>
+
+</head>
+<body>
+<div id ='maintable'  ></div>
+
+<div id= "product-add-form">
+<input type="text" id="product-name" style="display:block;">
+<input type="text" id="product-price" style="display:block;">
+<button type="submit">追加</button>
+</div>
+
+
+
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+
+<script>
+
+
+  'use strict'
+  function printTable(){  
+    fetch(`/api/products`)
+  .then(response =>{
+    if(response.status === 400){
+      console.log("400");
+    }else{
+      response.json()
+      .then(data =>{
+
+        var table = document.createElement('table');
+        // ヘッダーを作成
+        var tr = document.createElement('tr');
+            for (let key in data[0]) {
+                  // th要素を生成
+                  var th = document.createElement('th');
+                  // th要素内にテキストを追加
+                  th.textContent = key;
+                  // th要素をtr要素の子要素に追加
+                  tr.appendChild(th);
+                  }
+                  var th = document.createElement('th');
+                  th.textContent ="商品選択";
+                  tr.appendChild(th);
+                  // tr要素をtable要素の子要素に追加
+                  table.appendChild(tr);
+                  
+                  
+            // テーブル本体を作成
+            for (var i = 0; i < data.length; i++) {
+              // tr要素を生成
+              var tr = document.createElement('tr');
+              // th・td部分のループ
+              for (let key in data[0]) {
+                    // td要素を生成
+                    var td = document.createElement('td');
+                    // td要素内にテキストを追加
+                    td.textContent = data[i][key];
+                    // td要素をtr要素の子要素に追加
+                    tr.appendChild(td);
+                  }
+                  // ラジオボタンの要素を作成
+                  var radioButton = document.createElement("input");
+                  // ラジオボタンのタイプを設定
+                  radioButton.type = "radio";
+                  // ラジオボタンのnameを設定
+                  radioButton.name = "product-num";
+                  // ラジオボタンのvalueを設定
+                  radioButton.value = data[i].id;
+                  // // ラジオボタンのIDを設定
+                  // radioButton.id = data[i].id;
+                   // ラジオボタンのクリックイベントを追加
+                  radioButton.addEventListener("click", function () {
+                  // グループ内のラジオボタンを取得
+                  const radios = document.getElementsByName("product");
+                  // 選択されたラジオボタン以外の選択を解除
+                  for (let j = 0; j < radios.length; j++) {
+                    if (radios[j] !== this) {
+                      radios[j].checked = false;
+                    }
+                  }
+                });
+                  //ラジオボタンをtdの子要素に追加
+                  tr.appendChild(radioButton)
+                  // tr要素をtable要素の子要素に追加
+                  table.appendChild(tr);
+              }
+            // 生成したtable要素を追加する
+            document.getElementById('maintable').appendChild(table);
+          });
+      }
+    
+  });
+
+
+
+  }
+  printTable();
+
+  function handleButtonClick() {
+  var radioButtons = document.getElementsByName("product-num");
+  var selectedValue;
+
+  for (var i = 0; i < radioButtons.length; i++) {
+    if (radioButtons[i].checked) {
+      selectedValue = radioButtons[i].value;
+      break;
+    }
+  }
+
+  if (selectedValue) {
+    console.log("選択された値: " + selectedValue);
+  } else {
+    console.log("ラジオボタンが選択されていません。");
+  }
+}
+
+
+
+
+
+
+
+
+</script>
+
+
+
+</body>
+</html>

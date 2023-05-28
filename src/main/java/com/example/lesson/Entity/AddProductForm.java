@@ -8,7 +8,7 @@ import lombok.NonNull;
 @Data
 public class AddProductForm {
 
-    private int productId;
+    private Integer productId;
 
 
     @NotEmpty

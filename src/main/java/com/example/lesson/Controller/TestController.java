@@ -2,6 +2,10 @@ package com.example.lesson.Controller;
 
 import com.example.lesson.Entity.AddProductForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.ConfigurableWebServerFactory;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,9 +21,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Controller
-public class TestController {
+public class TestController implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
     @Autowired
     ProductService productService;
+
+    @Override
+    public void customize(ConfigurableWebServerFactory factory){
+        factory.addErrorPages((new ErrorPage(HttpStatus.NOT_FOUND,"/notFoundNew")));
+    }
+
+    @RequestMapping("/notFoundNew")
+    public String notFoundNew(){
+        return "404new";
+    }
 
     @GetMapping("/index")
     @ResponseBody
@@ -27,13 +41,17 @@ public class TestController {
         return "Hello Spring";
     }
 
+
+
     @GetMapping("/product-List")
     public String productList(Model model) {
         var list = productService.findAll();
         model.addAttribute("products", list);
         return "product-list";
-
     }
+
+
+
 
     @GetMapping("/product/{id}")
     public String date2(@PathVariable("id") int id,Model model) {
@@ -99,6 +117,19 @@ public class TestController {
     public String delete(@PathVariable("id") int id) {
         productService.delete(id);
         return "redirect:/product-List";
+    }
+
+
+    @GetMapping("/product-management")
+    public String productList2(){
+        return "product-list3";
+    }
+
+
+
+    @GetMapping("/user")
+    public String index2() {
+        return "user";
     }
 
 }

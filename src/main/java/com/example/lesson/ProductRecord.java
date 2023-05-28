@@ -1,6 +1,6 @@
 package com.example.lesson;
 
-public record ProductRecord(int id ,String name, int price) {
+public record ProductRecord(Integer id ,String name, Integer price) {
 
 
 }

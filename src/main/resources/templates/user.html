@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>User管理</title>
+</head>
+<body>
+    <div id="app">
+        <h1>{{ title }}</h1>
+    
+        <div id="add-area">
+            <p>書き換えたらどっちも変わる</p>
+            <p>名前：<input v-model="newName">{{newName}}</p>
+            <p>メール：<input v-model="newAddress"></p>
+            <p><button @click="adduser" >追加</button></p>
+        </div>
+    
+        <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>名前</th>
+                <th>メール</th>
+                <th>編集</th>
+                <th>削除</th>
+            </tr>
+            <tr v-for="user in users">
+                <td>{{ user.id }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.mail }}</td>
+                <td><button type="button" v-bind:value="user.id" @click="edit(user.id)">編集</button></td>
+                <td><button type="button" v-bind:value="user.id">削除</button></td>
+            </tr>
+        </table>
+    
+        <div id="edit-area">
+            <p>名前：<input v-model="editName"></p>
+            <p>メール：<input v-model="editMail"></p>
+            <p><button @click="updateUser">更新</button></p>
+        </div>
+
+
+        
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    <script>
+        // 双方向バインディング
+        const { createApp } = Vue
+
+        createApp({
+        //data=変数名
+        data() {
+            return {
+                //いくつも作れる
+                count: 0,
+                title: 'Hello Vue!',
+                newName: '',
+                newAddress: '',
+                editId: 0,
+                editName: '',
+                editMail: '',
+                users: [],
+            }
+        },
+        methods: {
+            countup() {
+                this.count += 1;
+            },
+            adduser() {
+                this.users.push(
+                    {
+                        id: 10,
+                        name: this.newName,
+                        mail: this.newAddress,
+                    }
+                )
+                axios.post()
+                .then(res => {
+                    this.getUsers();
+                })
+            },
+            edit(id) {
+                const targetUser = this.users.find(user => user.id === id);
+                this.editId = targetUser.id;
+                this.editName = targetUser.name;
+                this.editMail = targetUser.mail;
+            },
+            updateUser() {
+                const targetUser = this.users.find(user => user.id === this.editId);
+                //this.editName,Mailは、入力された値をv-modelで受け取って代入している
+                targetUser.name = this.editName;
+                targetUser.mail = this.editMail;
+                axiso.put('restコントローラーのマッピング',targetUser);
+            },
+            getUsers() {
+                axios.get('/api/users')
+                .then(res => {
+                    this.users = res.data;
+                })
+            }
+        },
+        //HTMLでVueと紐づける部分をdiv等で囲う。
+        
+        //コンストラクタ的なもの
+        //usersの内容をDBからとってくるということもできる
+        created: function() {
+            console.log('created');
+            this.getUsers();
+            // this.users =  [
+            //         {
+            //             id: 1,
+            //             name: 'test1',
+            //             mail: 'test1@example.com'
+            //         },
+            //         {
+            //             id: 2,
+            //             name: 'test2',
+            //             mail: 'test2@example.com'
+            //         },
+            //         {
+            //             id: 3,
+            //             name: 'test3',
+            //             mail: 'test3@example.com'
+            //         },
+            //         {
+            //             id: 4,
+            //             name: 'test4',
+            //             mail: 'test4@example.com'
+            //         },
+            //     ];
+        }
+        }).mount('#app')
+
+
+    </script>
+</body>
+</html>
