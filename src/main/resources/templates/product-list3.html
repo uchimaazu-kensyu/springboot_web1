@@ -109,18 +109,20 @@
       },
 
       updateProduct(){
-        const update ={
-          id:this.editId,
-          name:this.editName,
-          price:this.editPrice
-        }
-
-        const url = axios.put('/api/products/',update)
-        .then(() => {
-            console.log('データ更新:',url)
-            this.getProducts();
-;
-        });
+        if (window.confirm("更新しますか？")) {
+          const update ={
+            id:this.editId,
+            name:this.editName,
+            price:this.editPrice
+          }
+          const url = axios.put('/api/products/',update)
+          .then(() => {
+              console.log('データ更新:',url)
+              this.getProducts();
+            });
+          } else {
+            console.log("キャンセルが選択されました");
+          }
 
       },
 
@@ -148,14 +150,19 @@
       },
 
       deleteProduct(){
-        console.log(this.editId);
-        axios.delete(`api/products/${this.editId}`,this.editId)
-        .then(res =>{
-          this.getProducts();
-          this.editId =''
-          this.editName =''
-          this.editPrice =''
-        });
+        if (window.confirm("削除しますか？")) {
+          console.log(this.editId);
+          axios.delete(`api/products/${this.editId}`,this.editId)
+          .then(res =>{
+            this.getProducts();
+            this.editId =''
+            this.editName =''
+            this.editPrice =''
+          });
+          } else {
+            console.log("キャンセルが選択されました");
+          }
+
       }
 
 
